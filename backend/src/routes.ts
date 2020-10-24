@@ -1,8 +1,11 @@
 import {Router} from 'express';
-import {getRepository} from 'typeorm'; //Serve para criar, deletar, no banco de dados
-import Orphanage from './models/Orphanage';  //Importação da classe Orphanage
+import multer from 'multer';
+
+import uploadConfig from './config/upload';
+import OrphanagesController from './controllers/OrphanagesController';
 
 const routes = Router();
+const upload = multer(uploadConfig);
 
 /*
     O Comando abaixo é uma ROTA: que é basicamente onde vc passa o endereço ('/users'), você faz alguma coisa, que no caso é printar na tela Hello World.
@@ -21,32 +24,20 @@ const routes = Router();
 
         Body: Serve para enviar dados, principalmente do Formulário(como, senha, email, nome, etc), ou seja um monte de dados, mais complexas.
 */
-routes.post('/orphanages', async (request, response) => {
-    const {
-        name,
-        latitude,
-        longitude,
-        about,
-        instructions,
-        opening_hours,
-        open_on_weekends,
-    } = request.body;
 
-    const orphanagesRepository = getRepository(Orphanage);
-    const orphanage = orphanagesRepository.create({
-        name,
-        latitude,
-        longitude,
-        about,
-        instructions,
-        opening_hours,
-        open_on_weekends,
-    });
+/*
+    MVC - Model View Controller
+        Model => Representação de uma tabela no Banco. É a representação de uma entidade;
+        View => É como as coisas são visualizadas, é como fica disponível para o Front-End;
+        Controller => é onde vai ficar as lógicas das rotas;
+*/
 
-    await orphanagesRepository.save(orphanage);
+// Métodos do Controller: Index, show, create, update, delete.
 
-    return response.status(201).json(orphanage); //Este comando é o retorna da função, ou seja a resposta que o Node vai dar ao cliente/usuário, então usa-se o return response ou (retorne a resposta), utilizando o json, e o json ele vai retornar a resposta em objeto, então fica ({message: 'Hello World'}).
-}); 
+routes.get('/orphanages', OrphanagesController.index); // Index é para listagem
+routes.get('/orphanages/:id', OrphanagesController.show);
+routes.post('/orphanages', upload.array('images'), OrphanagesController.create); // Cadastro, e o upload.array('images') é para cadastrar uma imagem
+
 //Função - 1º Parâmetro = Indicar a rota(ex: '/users'). 2º Parâmetro, o que você quer q faça (ex: console.log('hello world')). Tem que colocar o Request e o Response, que é a Requisição e a Resposta. Na requisição, você pode buscar todos os dados. Response é como o backend vai retorna uma resposta.
 
 export default routes;

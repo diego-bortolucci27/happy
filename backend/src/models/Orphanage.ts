@@ -2,7 +2,8 @@
 
 // Também é necessário ir no mesmo arquivo tsconfig.json e habilitar os Experimental Options, que são os "experimentalDecorators": true, "emitDecoratorMetadata": true, que estão na linha 61,62,63 apenas tirando o comentário deles. Isso fará habilitar uma nova API, o Decorator, dentro de nossa aplicação.
 
-import {Entity, Column, PrimaryGeneratedColumn} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn} from 'typeorm';
+import Image from './Image';
 
 @Entity('orphanages')
 
@@ -30,4 +31,10 @@ export default class Orphanage{
 
     @Column()
     open_on_weekends: boolean;
+
+    @OneToMany(() => Image, image => image.orphanage, {
+        cascade: ['insert', 'update']
+    })
+    @JoinColumn({name: 'orphanage_id'})
+    images: Image[];
 }

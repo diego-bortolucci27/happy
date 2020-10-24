@@ -1,13 +1,20 @@
 import express from 'express';
+import path from 'path';
+import cors from 'cors';
+import 'express-async-errors';
 // Express é um Fremework em Node que ajuda a lidar com as Requisições e com as Respostas. Ele ajuda a criar rotas, etc.
 
 import './database/connection';
 import routes from './routes';
+import errorHandler from './errors/handler';
 
 const app = express(); // Comando de criação da aplicação, para poder utilizar o Express.
 
+app.use(cors());
 app.use(express.json());
 app.use(routes);
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
+app.use(errorHandler);
 
 app.listen(3333); //Aqui esta comunicando com a porta 3333. E com isso, acessa o localhost:3333
 
